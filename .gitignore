@@ -1,0 +1,47 @@
+# Data and large inputs
+data/
+predictions/
+out/
+
+# Experiment outputs
+runs/
+logs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# Outputs and artifacts
+*.h5
+*.npz
+*.npy
+*.pt
+*.pth
+plots/
+
+# Generated outputs inside src
+src/visualize_data/pca_outputs/
+
+# TCAV / RAV (deprioritized, not part of paper)
+src/compute_tcav_score.py
+src/compute_rav.py
+src/copy_rav.py
+src/rav_cosine_similarity.py
+src/summarize_rav_r2.py
+
+# Legacy scripts
+src/train_on_h5.py
+
+# LDA (not main method)
+src/data_processing/lda_latent.py
+src/data_processing/mass_lda_per_class.py
+
+# Scratch / exploratory
+notebooks/
+grid_search_alpha.py
+
+# Misc
+*.log
+.DS_Store
