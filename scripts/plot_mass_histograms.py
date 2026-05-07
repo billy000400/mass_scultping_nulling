@@ -98,10 +98,55 @@ def _jsd(p, q, eps=1e-10):
 
 # -- main ---------------------------------------------------------------
 
+def _dump_csv(csv_path, bins, h_inc, n_inc, panels):
+    """Write a long-format CSV of all histogram bin densities + counts.
+
+    panels: list of dicts with keys
+        title, h_a, n_a, h_b, n_b
+    """
+    import csv as _csv
+    cx = 0.5 * (bins[:-1] + bins[1:])
+    rows = []
+    # Inclusive QCD reference (same across panels)
+    for lo, hi, c, d in zip(bins[:-1], bins[1:], cx, h_inc):
+        rows.append({
+            "working_point": "inclusive",
+            "method": "inclusive_qcd",
+            "bin_lo": float(lo), "bin_hi": float(hi), "bin_center": float(c),
+            "density": float(d), "n_jets": int(n_inc),
+        })
+    # Per-panel methods
+    for p in panels:
+        for method_key, h_arr, n in [
+            ("vanilla_part_lambda0", p["h_a"], p["n_a"]),
+            ("s1_k2_alpha1_lambda0", p["h_b"], p["n_b"]),
+        ]:
+            for lo, hi, c, d in zip(bins[:-1], bins[1:], cx, h_arr):
+                rows.append({
+                    "working_point": p["title"],
+                    "method": method_key,
+                    "bin_lo": float(lo), "bin_hi": float(hi),
+                    "bin_center": float(c),
+                    "density": float(d), "n_jets": int(n),
+                })
+    os.makedirs(os.path.dirname(os.path.abspath(csv_path)) or ".",
+                exist_ok=True)
+    with open(csv_path, "w", newline="") as f:
+        w = _csv.DictWriter(f, fieldnames=[
+            "working_point", "method", "bin_lo", "bin_hi", "bin_center",
+            "density", "n_jets"])
+        w.writeheader()
+        w.writerows(rows)
+    print(f"Saved {csv_path}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out",
                     default=os.path.join(ROOT, "results/qcd_softdrop_histograms.pdf"))
+    ap.add_argument("--csv-out",
+                    default=os.path.join(ROOT, "results/qcd_softdrop_histograms.csv"),
+                    help="Long-format CSV dump of bin counts (read by replot_mass_histograms.py).")
     ap.add_argument("--annotate-jsd", action="store_true",
                     help="Print per-panel JSD against inclusive QCD on each subplot.")
     args = ap.parse_args()
@@ -143,6 +188,10 @@ def main():
 
     # Inclusive QCD reference (same for all three panels)
     h_inc = _norm_hist(mass[qcd_mask], bins)
+    n_inc = int(qcd_mask.sum())
+
+    # Collected per-panel data for CSV dump
+    panels_data = []
 
     for ax, rate, title in zip(axes, misid_rates, panel_titles):
         thr_a = np.quantile(score_a[qcd_mask], 1.0 - rate)
@@ -152,6 +201,10 @@ def main():
 
         h_a = _norm_hist(mass[sel_a], bins)
         h_b = _norm_hist(mass[sel_b], bins)
+        panels_data.append({
+            "title": title, "h_a": h_a, "n_a": int(sel_a.sum()),
+            "h_b": h_b, "n_b": int(sel_b.sum()),
+        })
 
         # mplhep-style step histograms via matplotlib `step`
         ax.step(cx, h_inc, where="mid", color="black",
@@ -193,6 +246,10 @@ def main():
                 bbox_inches="tight", dpi=200)
     plt.close(fig)
     print(f"Saved {args.out}")
+
+    # Dump bin densities so replot_mass_histograms.py can rebuild
+    # the figure without re-running inference.
+    _dump_csv(args.csv_out, bins, h_inc, n_inc, panels_data)
 
 
 if __name__ == "__main__":
