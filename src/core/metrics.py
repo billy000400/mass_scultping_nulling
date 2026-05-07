@@ -16,8 +16,13 @@ def compute_efficiency_at_misid_rate(
 ) -> Optional[float]:
     """Compute signal (Hbb) efficiency at a cut giving target QCD misidentification rate.
 
-    TXbb = Hbb_score / QCD_score. Find threshold on TXbb where 1% of QCD jets pass,
-    then report fraction of Hbb jets passing that threshold.
+    TXbb = P(Hbb) / (P(Hbb) + P(QCD))   -- the standard HEP convention. Find
+    the threshold on TXbb where 1% of QCD jets pass, then report the fraction
+    of Hbb jets passing that threshold.
+
+    Note: percentile-based Eff@misid is invariant to any strictly monotone
+    transform of the score, so this matches the previous TXbb = P(Hbb)/P(QCD)
+    formulation numerically; the change is for HEP convention consistency.
 
     Args:
         probs: (N, num_classes) class probabilities
@@ -25,7 +30,7 @@ def compute_efficiency_at_misid_rate(
         qcd_label: class index for QCD (default 0)
         hbb_label: class index for Hbb (default 1)
         target_misid_rate: target QCD misid rate (default 0.01 = 1%)
-        eps: small constant to avoid div-by-zero in TXbb
+        eps: small constant to avoid div-by-zero in the denominator
 
     Returns:
         efficiency@1% (signal efficiency at 1% QCD misid) or None if insufficient data
@@ -38,8 +43,8 @@ def compute_efficiency_at_misid_rate(
         return None
 
     hbb_prob = probs[:, hbb_label]
-    qcd_prob = probs[:, qcd_label] + eps
-    txbb = hbb_prob / qcd_prob
+    qcd_prob = probs[:, qcd_label]
+    txbb = hbb_prob / (hbb_prob + qcd_prob + eps)
 
     qcd_mask = targets == qcd_label
     hbb_mask = targets == hbb_label

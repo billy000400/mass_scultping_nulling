@@ -144,6 +144,23 @@ def build_s3_qcd_ols_deflated(Xq: np.ndarray, mq: np.ndarray, kmax: int,
 
     At step i, fit w_i = argmin || X_res w - mass_c ||^2; record the R^2 explained
     by that unit direction; project it out of X_res; repeat.
+
+    Equivalence to RAV (Regression Activation Vector): row 0 of the returned
+    basis is exactly the unit-normalised ridge OLS coefficient w/||w|| of
+    z-scored ``jet_sdmass`` regressed on QCD post-LN CLS tokens (centred by
+    ``qcd_mean``). That is the standard "RAV" construction. Higher rows
+    extend RAV to rank > 1 by iteratively deflating the chosen direction
+    out of the residual data and re-fitting — the natural rank-k
+    generalisation when the user wants a multi-dimensional removal subspace
+    rather than a single direction.
+
+    Caveat for downstream nulling: w/||w|| is the *coefficient* direction,
+    not the direction along which mass varies most in input space. Because
+    (X^T X + ridge I)^-1 inflates low-variance eigendirections, the unit
+    coefficient often lives in a small-variance subspace. Projecting it
+    out of X therefore barely changes X, and a linear probe on the
+    residual still recovers most of the mass info. See the linear-probe
+    sweep in ``scripts/probe_r2_vs_k.py`` for an empirical demonstration.
     """
     Xq = Xq.astype(np.float64)
     qcd_mean = Xq.mean(0)
