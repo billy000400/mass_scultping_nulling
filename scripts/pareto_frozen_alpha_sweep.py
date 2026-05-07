@@ -171,7 +171,7 @@ def main() -> None:
                zorder=5, label=f"unconstrained ParT (α=0)")
     ax.set_xlabel("JSD (mass sculpting; lower = better)")
     ax.set_ylabel("Eff@1% (Hbb tag eff at 1% QCD mistag; higher = better)")
-    ax.set_title("Frozen-head Pareto: S1 projection strength α-sweep")
+    # No in-figure title; the LaTeX caption is the title (ICML rule).
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=8, loc="best")
     fig.tight_layout()

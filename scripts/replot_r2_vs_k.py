@@ -86,7 +86,7 @@ def main() -> None:
                label=f"no nulling ({r2_base:.3f})")
     ax.set_xlabel("k (number of nulled directions)")
     ax.set_ylabel(r"$R^2$ of jet $m_{\mathrm{SD}}$ from $h'$ (linear probe, QCD test)")
-    ax.set_title(r"Mass-info-per-direction: $R^2(m_{\mathrm{SD}} \mid h')$ vs $k$")
+    # No in-figure title; the LaTeX caption is the title (ICML rule).
     # Linear x-axis -- no symlog gap between k=0 and k=1.
     ax.set_xticks([0, 1, 2, 4, 8, 16])
     ax.set_xlim(-0.4, 16.4)

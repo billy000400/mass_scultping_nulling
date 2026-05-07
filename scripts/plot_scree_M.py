@@ -58,9 +58,7 @@ def main() -> None:
     ax.set_yscale("log")
     ax.set_xlabel("singular-value index $i$")
     ax.set_ylabel(r"$\sigma_i / \sigma_1$")
-    ax.set_title(
-        rf"Scree plot of $M$ (QCD class-conditional bin means, $B={n_bins}$)"
-    )
+    # No in-figure title; the LaTeX caption is the title (ICML rule).
     ax.set_xticks(idx[::2])
     ax.set_ylim(floor, 2.0)
     ax.grid(True, which="both", alpha=0.3)

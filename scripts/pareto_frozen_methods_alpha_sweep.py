@@ -183,7 +183,7 @@ def main() -> None:
                zorder=5, label="unconstrained ParT (α=0)")
     ax.set_xlabel("JSD (mass sculpting; lower = better)")
     ax.set_ylabel("Eff@1% (Hbb tag eff at 1% QCD mistag; higher = better)")
-    ax.set_title(f"Frozen-head α-sweep, k={args.k}: direction-source comparison")
+    # No in-figure title; the LaTeX caption is the title (ICML rule).
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=8, loc="lower left")
     fig.tight_layout()

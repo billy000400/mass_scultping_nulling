@@ -102,7 +102,7 @@ def plot_overlay(
     }
     ax.set_xlabel("JSD (QCD mass sculpting, lower is better)")
     ax.set_ylabel(y_labels.get(y_metric, y_metric))
-    ax.set_title(title)
+    # No in-figure title; the LaTeX caption is the title (ICML rule).
     if max_jsd is not None:
         ax.set_xlim(0, max_jsd)
     else:
