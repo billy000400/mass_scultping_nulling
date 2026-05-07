@@ -204,9 +204,11 @@ def main() -> None:
     }
     fig, ax = plt.subplots(figsize=(5.6, 3.8))
     for name in method_order:
-        ks, r2s, errs = [], [], []
+        # Anchor each method at (k=0, r2_base): k=0 means "no nulling",
+        # which is identical across methods by construction.
+        ks, r2s, errs = [0], [r2_base], [0.0]
         for r in rows:
-            if r["method"] != name:
+            if r["method"] != name or r["k"] == 0:
                 continue
             ks.append(r["k"])
             r2s.append(r["r2_test"])
@@ -227,9 +229,12 @@ def main() -> None:
     ax.set_xlabel("k (number of nulled directions)")
     ax.set_ylabel(r"$R^2$ of jet $m_{\mathrm{SD}}$ from $h'$ (linear probe, QCD test)")
     ax.set_title(r"Mass-info-per-direction: $R^2(m_{\mathrm{SD}} \mid h')$ vs $k$")
+    # Symlog x-axis with linear region [0, 1] to spread points
+    # k in {1,2,4,8,16} evenly while still rendering the k=0 anchor.
     ax.set_xscale("symlog", linthresh=1.0)
     ax.set_xticks([0, 1, 2, 4, 8, 16])
     ax.set_xticklabels(["0", "1", "2", "4", "8", "16"])
+    ax.set_xlim(-0.2, 20)
     ax.set_ylim(-0.02, 1.0)
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=8, loc="upper right")
