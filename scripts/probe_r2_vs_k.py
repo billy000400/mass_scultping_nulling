@@ -229,12 +229,12 @@ def main() -> None:
     ax.set_xlabel("k (number of nulled directions)")
     ax.set_ylabel(r"$R^2$ of jet $m_{\mathrm{SD}}$ from $h'$ (linear probe, QCD test)")
     ax.set_title(r"Mass-info-per-direction: $R^2(m_{\mathrm{SD}} \mid h')$ vs $k$")
-    # Symlog x-axis with linear region [0, 1] to spread points
-    # k in {1,2,4,8,16} evenly while still rendering the k=0 anchor.
-    ax.set_xscale("symlog", linthresh=1.0)
+    # Linear x-axis: the symlog version of this plot inserts a wide
+    # gap between k=0 and k=1 (the linear region of symlog gets the
+    # same visual width as a full log decade). Linear avoids that
+    # while keeping the k=0 anchor at the left edge.
     ax.set_xticks([0, 1, 2, 4, 8, 16])
-    ax.set_xticklabels(["0", "1", "2", "4", "8", "16"])
-    ax.set_xlim(-0.2, 20)
+    ax.set_xlim(-0.4, 16.4)
     ax.set_ylim(-0.02, 1.0)
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=8, loc="upper right")
